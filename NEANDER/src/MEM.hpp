@@ -5,10 +5,11 @@
 class Memoria {
 private:
     std::vector<int> memoria;  // Vetor que representa a memória
+    std::vector<int> mem_inst; // Vetor que representa a memória que vai ser utilizada apenas para armazenar as palavras de instrução 
 
 public:
     // Construtor com tamanho definido
-    Memoria(size_t tamanho) : memoria(tamanho, 0) {}
+    Memoria(size_t tamanho) : memoria(tamanho, 0), mem_inst(tamanho, 0) {}
 
     // Ler valor de um endereço
     int lerEndereco(int endereco) const {
