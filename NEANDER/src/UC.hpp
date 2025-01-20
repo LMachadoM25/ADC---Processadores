@@ -1,6 +1,7 @@
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
+#include <regex>
 #include "MEM.hpp"
 #include "ULA.hpp"
 #include "AC.hpp"
@@ -10,26 +11,17 @@ class UnidadeDeControle {
 private:
     int pc;  // Contador de programa
     int ri;  // Registrador de instrução
-    int acumulador;  // O único registrador do Neander
+    int acumulador;
     Memoria& memoria;  // Agora só uma instância de Memoria
     ULA& ula;
 
 public:
-    std::unordered_map<std::string, int> instr_map {
-        {"NOP", 0x00},
-        {"LDA", 0x01},
-        {"STA", 0x02},
-        {"ADD", 0x03},
-        {"SUB", 0x04},
-        {"AND", 0x05},
-        {"OR",  0x06},
-        {"NOT", 0x07},
-        {"JMP", 0x08},
-        {"JN",  0x09},
-        {"HLT", 0xFF}
-    };
+
+    // Construtor
+    UnidadeDeControle(Memoria& mem, ULA& u) : pc(0), ri(0), acumulador(0), memoria(mem), ula(u) {}
 
     void parser(const std::string& filePath) {
+        std::cout << "Chegou aqui!";
         std::ifstream file(filePath); 
 
         if (!file.is_open()) {
@@ -38,47 +30,56 @@ public:
         }
         
         std::string line;
-        std::string instruction;
-        int word;
-        int operand;
-        int contador = 0;
-
         while (std::getline(file, line)) {
-            std::istringstream iss(line);
-            iss >> instruction >> operand;
+        int index, value;
 
-            auto it = instr_map.find(instruction);
-            int opcode = it->second;
+        // Verifica se a linha contém o formato "MEM[index] = value"
+            if (line.find("MEM[") != std::string::npos && line.find("] =") != std::string::npos) {
+                // Encontrar a posição do índice e valor
+                size_t startIdx = line.find("[") + 1;
+                size_t endIdx = line.find("]");
 
-            word = (opcode << 8) | (operand & 0xFF);
+                // Extrair o índice e o valor
+                std::string indexStr = line.substr(startIdx, endIdx - startIdx);
+                std::string valueStr = line.substr(endIdx + 3); // Pular "] = "
 
-            // Usando a memória de instruções diretamente
-            memoria.escreverMemoriaDeInstrucoes(contador, word);
-            contador++;
+                // Tentar converter para inteiros
+                try {
+                    index = std::stoi(indexStr); // Converte o índice
+                    value = std::stoi(valueStr); // Converte o valor
+                } catch (const std::invalid_argument& e) {
+                    std::cout << "Erro na conversão de dados na linha: " << line << std::endl;
+                    continue;
+                }
+
+            memoria.write(index, value);
+            } 
         }
     }
 
-    // Construtor
-    UnidadeDeControle(Memoria& mem, ULA& u) : pc(0), ri(0), acumulador(0), memoria(mem), ula(u) {}
+    void busca() {
+        //busca uma informação na memória
+        int rdm_value = memoria.lerMemoria(pc); //rdm está guardando a variável lida na memória
+        executarPrograma(rdm_value);
+        //carga_rdm = ?
 
-    void executarPrograma() {
+    }
+
+    void executarPrograma(int rdm) {
         bool rodando = true;
         while (rodando) {
             // Fetch: Busca a próxima instrução na memória de instruções
-            ri = memoria.lerMemoriaDeInstrucoes(pc);
-
+            ri = rdm;
             // Decode & Execute: Decodifica e executa a instrução
-            rodando = decodificarInstrucao();
+            //rodando = decodificarInstrucao();
 
             // Incrementa o PC
             pc++;
         }
     }
-
-    bool decodificarInstrucao() {
-        int opcode = (ri >> 8) & 0xFF;  
-        int operando = ri & 0xFF;       
-
+    /*
+    bool decode(int opcode) {
+  
         switch (opcode) {
             case 0x00:  // NOP
                 return true;
@@ -104,4 +105,5 @@ public:
                 return false;
         }
     }
+    */
 };
