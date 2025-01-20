@@ -1,4 +1,4 @@
-#include "ULA.h"
+#include "../include/ULA.h"
 
 int ULA::operar(int x, int y, Operacao op) {
     switch (op) {

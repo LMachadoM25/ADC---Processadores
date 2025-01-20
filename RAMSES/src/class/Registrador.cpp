@@ -1,4 +1,4 @@
-#include "Registrador.h"
+#include "../include/Registrador.h"
 
 Registrador::Registrador() : valor(0) {}
 

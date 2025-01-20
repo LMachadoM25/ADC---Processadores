@@ -1,5 +1,5 @@
 // UnidadeDeControle.cpp
-#include "UDC.h"
+#include "../include/UDC.h"
 #include <iostream>
 
 UnidadeDeControle::UnidadeDeControle(int tamanhoMemoria) : memoria(tamanhoMemoria), pc(0) {}

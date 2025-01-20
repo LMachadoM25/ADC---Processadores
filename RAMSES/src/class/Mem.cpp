@@ -1,4 +1,4 @@
-#include "Mem.h"
+#include "../include/Mem.h"
 
 Memoria::Memoria(int tamanho) : dados(tamanho, 0) {}
 
