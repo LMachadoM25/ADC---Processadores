@@ -9,10 +9,10 @@
 
 class UnidadeDeControle {
 private:
-    int pc;  // Contador de programa
-    int ri;  // Registrador de instrução
-    int acumulador;
-    Memoria& memoria;  // Agora só uma instância de Memoria
+    int pc;  //contador de programa
+    int ri;  //registrador de instrução
+    unsigned int acumulador;    //variável acumulador 
+    Memoria& memoria;  //instância de Memoria
     ULA& ula;
 
 public:
@@ -20,8 +20,8 @@ public:
     // Construtor
     UnidadeDeControle(Memoria& mem, ULA& u) : pc(0), ri(0), acumulador(0), memoria(mem), ula(u) {}
 
+    //função responsável por receber a memória externa e transportar para a nossa memória interna
     void parser(const std::string& filePath) {
-        std::cout << "Chegou aqui!";
         std::ifstream file(filePath); 
 
         if (!file.is_open()) {
@@ -55,55 +55,90 @@ public:
             memoria.write(index, value);
             } 
         }
+        file.close();
     }
 
+    //Inicia o ciclo de busca de instrução.
+    void executar() {
+
+        busca();
+        //display();
+    }
+
+    //busca uma instrução e um endereço de dado na memória.
     void busca() {
-        //busca uma informação na memória
-        int rdm_value = memoria.lerMemoria(pc); //rdm está guardando a variável lida na memória
-        executarPrograma(rdm_value);
-        //carga_rdm = ?
-
-    }
-
-    void executarPrograma(int rdm) {
         bool rodando = true;
+
+        unsigned int opcode, operando;
         while (rodando) {
             // Fetch: Busca a próxima instrução na memória de instruções
-            ri = rdm;
-            // Decode & Execute: Decodifica e executa a instrução
-            //rodando = decodificarInstrucao();
-
-            // Incrementa o PC
+            opcode = memoria.read(pc);
             pc++;
+
+            // Decode & Execute: Decodifica e executa a instrução
+            operando = memoria.read(pc);
+            pc++;
+
+            rodando = decode(opcode, operando); //quando decode retornar false, quebra o while e cai na função end()
         }
+
+        end();
     }
-    /*
-    bool decode(int opcode) {
-  
+    
+    //decodifica e realiza a instrução
+    bool decode(unsigned int opcode, unsigned int operand) {
+
         switch (opcode) {
-            case 0x00:  // NOP
+            case 0:  // NOP
                 return true;
-            case 0x01:  // LOAD
-                acumulador = memoria.lerMemoriaDeDados(operando);
+            case 16:  // STA
+                memoria.write(operand, acumulador);
                 return true;
-            case 0x02:  // STORE
-                memoria.escreverMemoriaDeDados(operando, acumulador);
+            case 32:  // LDA
+                acumulador = ula.LDA(acumulador, memoria.read(operand)); //carrega o acumulador com o valor em MEM[operand]
                 return true;
-            case 0x03:  // ADD
-                acumulador = ula.somar(acumulador, memoria.lerMemoriaDeDados(operando));
+            case 48:  // ADD
+                acumulador = ula.somar(acumulador, memoria.read(operand)); //soma no acumulador o valor em MEM[operand].
                 return true;
-            case 0x04:  // SUB
-                acumulador = ula.subtrair(acumulador, memoria.lerMemoriaDeDados(operando));
+            case 64:  // OR
+                acumulador = ula.orOp(acumulador, memoria.read(operand)); //realiza no acumulador uma operação OR
                 return true;
-            case 0x05:  // AND
-                acumulador = ula.andBitwise(acumulador, memoria.lerMemoriaDeDados(operando));
+            case 80:  // AND
+                acumulador = ula.andOp(acumulador, memoria.read(operand)); //realiza no acumulador uma operação AND
                 return true;
-            case 0xFF:  // HALT
+            case 96:  // NOT
+                acumulador = ula.notOp(acumulador);
+                return true;
+            case 128:  // JMP
+                pc = operand;
+                return true;
+            case 144:  // JN
+                if(ula.getFlagNegativo()) {
+                    pc = operand;
+                }
+                return true;
+            case 160:  // JZ
+                if(ula.getFlagZero()) {
+                    pc = operand;
+                }
+                return true;
+            case 240:  // HALT
                 return false;  
             default:
                 std::cerr << "Instrução inválida: " << opcode << "\n";
                 return false;
         }
     }
-    */
+
+    //joga para a saída as variáveis solicitadas.
+    void output() {
+
+    }
+
+    //função de encerramento do programa.
+    void end() {
+        std::cout << "Valor do PC: " << pc << std::endl;
+        std::cout << "Resultado final: " << acumulador << std::endl;
+        std::cout << std::endl;
+    }
 };

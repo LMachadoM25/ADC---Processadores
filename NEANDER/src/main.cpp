@@ -8,9 +8,15 @@ int main() {
     ULA ula;
     UnidadeDeControle controle(mem, ula);
     
-    std::string path = "algorithm/alg1.txt";
+    std::string path = "algorithm/alg3.txt";
     controle.parser(path);
 
+    mem.exibirMemoria();
+
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    controle.executar();
     mem.exibirMemoria();
 
     return 0;

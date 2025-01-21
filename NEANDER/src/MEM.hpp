@@ -11,12 +11,13 @@ public:
     Memoria(size_t tamanho) : memoria(tamanho, 0) {}
 
     // Métodos para acessar memória de dados
-    int lerMemoria(int endereco) const {
+    int read(int endereco) const {
         if (endereco >= 0 && endereco < memoria.size())
             return memoria[endereco];
-        throw std::out_of_range("Endereço inválido na memória de dados!");
+        else
+            throw std::out_of_range("Endereço inválido na memória de dados!");
     }
-
+    // Método para escrever na memória
     void write(int endereco, int valor) {
         if (endereco >= 0 && endereco < memoria.size())
             memoria[endereco] = valor;

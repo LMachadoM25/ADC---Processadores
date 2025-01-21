@@ -2,7 +2,7 @@
 
 class ULA {
 private:
-    int resultado;  // Resultado da última operação
+    unsigned int resultado;  // Resultado da última operação
     bool flagZero;  // Flag: resultado igual a zero
     bool flagNegativo;  // Flag: resultado negativo
 
@@ -16,24 +16,41 @@ public:
         return resultado;
     }
 
-    // Operação SUB (Subtração)
-    int subtrair(int acumulador, int valorMemoria) {
-        resultado = acumulador - valorMemoria;
+    // Operação AND (Lógica)
+    int andOp(int acumulador, int value) {
+        resultado = acumulador & value;
         atualizarFlags(resultado);
         return resultado;
     }
 
-    // Operação AND (Lógica)
-    int andBitwise(int acumulador, int valorMemoria) {
-        resultado = acumulador & valorMemoria;
+    int orOp(int acumulador, int value) {
+        resultado = acumulador | value;
         atualizarFlags(resultado);
         return resultado;
     }
+
+    int notOp(unsigned int acumulador) {
+        resultado = ~acumulador;
+        atualizarFlags(resultado);
+        return resultado;
+    }
+
+    int LDA(int acumulador, int value) {
+        acumulador = value;
+        resultado = acumulador;
+        atualizarFlags(resultado);
+        return resultado;
+    }
+    //acumulador = memoria.read(operand); //carrega o acumulador com o valor em MEM[operand]
 
     // Atualizar Flags (Zero e Negativo)
     void atualizarFlags(int resultado) {
-        flagZero = (resultado == 0);
-        flagNegativo = (resultado < 0);
+        if (resultado == 0) {
+            flagZero = true;
+        }
+        if (resultado < 0) {
+            flagNegativo = true;
+        }
     }
 
     // Getters para Flags
