@@ -30,7 +30,7 @@ public:
     }
 
     int notOp(unsigned int acumulador) {
-        resultado = ~acumulador;
+        resultado = ~acumulador & 0xFF; //verificar amanha
         atualizarFlags(resultado);
         return resultado;
     }
