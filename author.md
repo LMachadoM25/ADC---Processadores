@@ -13,12 +13,12 @@ Implementação básica [x]
 
 alg1.txt - Algoritmo de soma simples de duas variáveis                                                                             [x]
 alg2.txt - Algoritmo que verifica o sinal de uma variável. Se positivo, salva em uma posição. Se negativo, salva em outra posição. [x]
-alg3.txt - Algoritmo de subtração simples de duas variáveis.                                                                       [ ] (Resultado invertido!)
+alg3.txt - Algoritmo de subtração simples de duas variáveis.                                                                       [/] (Resultado invertido!)
 
 RAMSÉS
-Implementação básica [ ]
+Implementação básica [x]
 -
 
 CESAR
-Implementação básica [ ]
--
+Implementação básica [/]
+- 

@@ -41,7 +41,6 @@ public:
         atualizarFlags(resultado);
         return resultado;
     }
-    //acumulador = memoria.read(operand); //carrega o acumulador com o valor em MEM[operand]
 
     // Atualizar Flags (Zero e Negativo)
     void atualizarFlags(int resultado) {

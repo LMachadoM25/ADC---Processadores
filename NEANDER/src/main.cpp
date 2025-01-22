@@ -12,12 +12,9 @@ int main() {
     controle.parser(path);
 
     mem.exibirMemoria();
-
     std::cout << std::endl;
     std::cout << std::endl;
-
     controle.executar();
-    mem.exibirMemoria();
 
     return 0;
 }
