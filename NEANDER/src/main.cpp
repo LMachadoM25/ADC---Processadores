@@ -2,7 +2,6 @@
 #include <sstream>
 #include "UC.hpp"   
 
-
 int main() {
     Memoria mem(256);
     ULA ula;
