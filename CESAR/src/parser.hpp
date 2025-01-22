@@ -34,7 +34,7 @@ public:
 
     std::string linhaInstrucao, linhaRegistrador, linhaOperando;
     int contador = 0;
-    const int baseInstrucoes = 100;
+    const int baseInstrucoes = 128;
     while (std::getline(arquivo, linhaInstrucao) && 
            std::getline(arquivo, linhaRegistrador) && 
            std::getline(arquivo, linhaOperando)) {

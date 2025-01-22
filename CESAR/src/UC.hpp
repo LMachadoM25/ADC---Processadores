@@ -5,6 +5,7 @@
 #include "MEM.hpp"
 #include "ULA.hpp"
 #include "Registradores.hpp"
+#include "MUX.hpp"
 
 class UnidadeDeControle
 {
@@ -14,11 +15,12 @@ private:
     Registradores &regs; // Referência aos registradores
     ULA &ula;            // Referência à ULA
     int ciclos;
+    MUX mux;
 
 public:
     // Construtor
     UnidadeDeControle(Memoria &mem, Registradores &regs, ULA &ula)
-        : pc(0), memoria(mem), regs(regs), ula(ula), ciclos(0) {}
+        : pc(128), memoria(mem), regs(regs), ula(ula), ciclos(0) {}
 
     // Executar o programa armazenado na memória
     void executarPrograma()
@@ -38,13 +40,21 @@ public:
                 regs.escrever(regDestino, memoria.lerEndereco(operando));
                 break;
 
-            case 0x2: // STR: Armazenar valor do registrador na memória
-                memoria.escreverEndereco(operando, regs.ler(regDestino));
+            case 0x2:
+            { // STR: Armazenar valor do registrador na memória
+                int resultado = regs.ler(regDestino);
+                int destino = mux.selecionar(regDestino, operando, true); // Escolhe entre memória e registrador
+                memoria.escreverEndereco(destino, resultado);
+                ciclos += 2;
                 break;
+            }
 
             case 0x3:
-            { // ADD: Soma entre registrador e memória
-                regs.escrever(regDestino, ula.somar(regs.ler(regDestino), memoria.lerEndereco(operando)));
+            {                                                                             // ADD: Soma entre registrador e memória
+                int operandoA = regs.ler(regDestino);                                     // Valor do registrador de destino
+                int operandoB = mux.selecionar(memoria.lerEndereco(operando), 10, false); // Seleciona memória
+                regs.escrever(regDestino, ula.somar(operandoA, operandoB));
+                ciclos += 1;
                 break;
             }
 
@@ -59,7 +69,6 @@ public:
                 break;
 
             default:
-                std::cerr << "Opcode inválido: " << opcode << "\n";
                 rodando = false;
                 break;
             }
@@ -72,7 +81,6 @@ public:
         regs.exibir();
         std::cout << "Tempo de execução (em ciclos de relógio): " << ciclos << std::endl;
     }
-    
 };
 
 #endif // UC_HPP
